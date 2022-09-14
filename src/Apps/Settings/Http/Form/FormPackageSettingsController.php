@@ -3,7 +3,8 @@
 namespace Symbiotic\Apps\Settings\Http\Form;
 
 use Psr\Http\Message\ServerRequestInterface;
-use Symbiotic\Core\View\View;
+use Symbiotic\Form\FormBuilder;
+use Symbiotic\View\View;
 use Symbiotic\Form\Form;
 use Symbiotic\Settings\PackageSettingsControllerAbstract;
 use Symbiotic\Settings\Settings;
@@ -41,7 +42,7 @@ class FormPackageSettingsController extends PackageSettingsControllerAbstract
         /**
          * @throws
          */
-        $this->settings_repository->save($this->package->getId(), new Settings($settings->all()));
+        $this->settingsRepository->save($this->package->getId(), new Settings($settings->all()));
 
         return $this->edit(true);
     }
@@ -52,11 +53,12 @@ class FormPackageSettingsController extends PackageSettingsControllerAbstract
     {
         $form   = $this->getForm();
         if($form) {
-            $form ->setAction(route('backend:settings::package.save', ['package_id' => $this->package->getId()]));
+            $form ->setAction(route($this->container,'backend:settings::package.save', ['package_id' => $this->package->getId()]));
+            $form->addField('submit', ['default' => 'Send']);
+            $form->setValues($this->getPackageSettings()->all());
         }
-        $form->addField('submit', ['default' => 'Send']);
-        $form->setValues($this->getPackageSettings()->all());
-        return View::make('settings::backend/packages/settings_form', [
+
+        return $this->view->make('settings::backend/packages/settings_form', [
             'package' => $this->package,
             'form' => $form,
            /// 'settings' => collect($this->getPackageSettings()->all()),
@@ -78,8 +80,9 @@ class FormPackageSettingsController extends PackageSettingsControllerAbstract
             return new $class;// throw not exists
 
         } elseif ($package->has('settings_fields')) {
-            return new Form(['fields'=>$package->get('settings_fields')]);// throw is not array
+            return $this->formBuilder->createFromArray(['fields'=> $package->get('settings_fields')]);;// throw is not array
         }
+
         return null;
     }
 }

@@ -10,12 +10,10 @@ use Symbiotic\Routing\RouterInterface;
 
 class Routing extends AppRouting
 {
-    public function backendRoutes(RouterInterface $router)
+    public function backendRoutes(RouterInterface $router):void
     {
 
         $router->group(['namespace' => 'Backend'], function (RouterInterface $router) {
-
-
 
             $router->addRoute(['get','post'],'/filesystems/add/{driver}', [
                 'uses' => 'Filesystems@add',

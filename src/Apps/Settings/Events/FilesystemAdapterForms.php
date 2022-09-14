@@ -55,6 +55,6 @@ class FilesystemAdapterForms
      */
     public function getForm(string $adapter): ?FormInterface
     {
-        return isset($this->adapter_forms[$adapter]) ? $this->adapter_forms[$adapter] : null;
+        return $this->adapter_forms[$adapter] ?? null;
     }
 }

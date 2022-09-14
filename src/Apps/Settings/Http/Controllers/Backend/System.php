@@ -1,112 +1,124 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Symbiotic\Apps\Settings\Http\Controllers\Backend;
 
 use Psr\Http\Message\ServerRequestInterface;
 use Symbiotic\Apps\Settings\Form\SystemSettingsForm;
-use Symbiotic\Apps\Settings\Http\Form\FieldFilesystemSelect;
+use Symbiotic\Apps\Settings\Form\FieldFilesystemSelect;
 use Symbiotic\Core\Config;
 use Symbiotic\Core\CoreInterface;
-use Symbiotic\Core\View\View;
-use Symbiotic\Form\Form;
+use Symbiotic\Core\Events\CacheClear;
+use Symbiotic\Form\FormBuilder;
+use Symbiotic\Form\FormInterface;
+use Symbiotic\Routing\UrlGeneratorInterface;
+use Symbiotic\View\View;
 use Symbiotic\Settings\Settings;
 use Symbiotic\Settings\SettingsRepositoryInterface;
+
+use Symbiotic\View\ViewFactory;
+
 use function _S\collect;
+use function _S\event;
 use function _S\route;
 use function _S\settings;
 
 class System
 {
-    protected CoreInterface $core;
 
-    protected SettingsRepositoryInterface $settings_repository;
+    protected ?FormInterface $form;
 
-    protected ?Form $form;
-
-    public function __construct(CoreInterface $core, SettingsRepositoryInterface $repository)
-    {
-        $this->core = $core;
-        $this->settings_repository = $repository;
-        $this->initForm();
-
+    public function __construct(
+        protected CoreInterface $core,
+        protected SettingsRepositoryInterface $settingsRepository,
+        protected ViewFactory $view
+    ) {
+        $this->form = $this->initForm();
     }
 
-    protected function initForm()
+    protected function initForm(): SystemSettingsForm
     {
+        /**
+         * @var FormBuilder            $formBuilder
+         * @var Config                 $config
+         * @var ServerRequestInterface $request
+         */
         $config = $this->core['config'];
         $request = $this->core['request'];
+        $formBuilder = $this->core->get(FormBuilder::class);
         $uri = $request->getUri();
         $port = $uri->getPort();
         if (in_array($port, [80, 443])) {
             $port = '';
         }
-        $form = ['fields' =>  [
-            [
-                'type' => 'text',
-                'name' => 'default_host',
-                'label' => 'Default host',
-                'default' => $uri->getHost() . $uri->getPort() . (!empty($port) ? $port : ''),// port?
-            ],
-            [
-                'type' => 'text',
-                'name' => 'uri_prefix',
-                'label' => 'Глобальный префикс Uri',
-                'default' => $config['uri_prefix']
-            ],
-            [
-                'type' => 'text',
-                'name' => 'backend_prefix',
-                'label' => 'Admin префикс Uri',
-                'default' => $config['backend_prefix'],
-            ],
-            [
-                'type' => 'text',
-                'name' => 'assets_prefix',
-                'label' => 'Префикс Uri для статичных файлов',
-                'default' => $config['assets_prefix'],
-            ],
-            [
-                'label' => 'Assets filesystem',
-                'type' => FieldFilesystemSelect::TYPE,
-                'name' => 'assets_filesystem',
-            ],
-            [
-                'label' => 'Media filesystem',
-                'type' => FieldFilesystemSelect::TYPE,
-                'name' => 'media_filesystem',
-            ],
-            [
-                'type' => 'bool',
-                'name' => 'debug',
-                'label' => 'Debug',
-                'default' => (int)$config['debug']
-            ],
-            [
-                'type' => 'bool',
-                'name' => 'symbiosis',
-                'label' => 'Режим симбиоза',
-                'default' => (int)$config['symbiosis']
+        $form = [
+            'fields' => [
+                [
+                    'type' => 'text',
+                    'name' => 'default_host',
+                    'label' => 'Default host',
+                    'default' => $uri->getHost() . (!empty($port) ? $port : ''),// port?
+                ],
+                [
+                    'type' => 'text',
+                    'name' => 'uri_prefix',
+                    'label' => 'Глобальный префикс Uri',
+                    'default' => $config['uri_prefix']
+                ],
+                [
+                    'type' => 'text',
+                    'name' => 'backend_prefix',
+                    'label' => 'Admin префикс Uri',
+                    'default' => $config['backend_prefix'],
+                ],
+                [
+                    'type' => 'text',
+                    'name' => 'assets_prefix',
+                    'label' => 'Префикс Uri для статичных файлов',
+                    'default' => $config['assets_prefix'],
+                ],
+                [
+                    'label' => 'Assets filesystem',
+                    'type' => FieldFilesystemSelect::TYPE,
+                    'name' => 'assets_filesystem',
+                ],
+                [
+                    'label' => 'Media filesystem',
+                    'type' => FieldFilesystemSelect::TYPE,
+                    'name' => 'media_filesystem',
+                ],
+                [
+                    'type' => 'bool',
+                    'name' => 'debug',
+                    'label' => 'Debug',
+                    'default' => (int)$config['debug']
+                ],
+                [
+                    'type' => 'bool',
+                    'name' => 'symbiosis',
+                    'label' => 'Режим симбиоза',
+                    'default' => (int)$config['symbiosis']
 
-            ],
-            [
-                'type' => 'bool',
-                'name' => 'packages_settlements',
-                'label' => 'Поселения приложений по их ID',
-                'default' => (int)$config['packages_settlements']
-            ],
-            [
-                'type' => 'submit',
-                'default' => 'Save',
+                ],
+                [
+                    'type' => 'bool',
+                    'name' => 'packages_settlements',
+                    'label' => 'Поселения приложений по их ID',
+                    'default' => (int)$config['packages_settlements']
+                ],
+                [
+                    'type' => 'submit',
+                    'default' => 'Save',
+                ]
             ]
-        ]];
+        ];
 
-        $this->form = \_S\event(new SystemSettingsForm($form));
+        return \_S\event($this->core, $formBuilder->createFromArray($form, SystemSettingsForm::class));
     }
 
     public function coreSave(ServerRequestInterface $request)
     {
-
-
         $data = $request->getParsedBody();
         $errors = [
             'fields' => []
@@ -144,19 +156,25 @@ class System
         /**
          * @throws
          */
-        $this->settings_repository->save('core', new Settings($settings->all()));
-
+        $this->settingsRepository->save('core', new Settings($settings->all()));
+        event($this->core, new CacheClear('all'));
+        if ($settings->get('backend_prefix') !== ($this->core) ('config::backend_prefix')) {
+            $redirect = $this->core->get(UrlGeneratorInterface::class)->to(
+                rtrim($settings->get('backend_prefix'), '/') . '/settings/'
+            );
+            return \_S\redirect($this->core, $redirect, 302);
+        }
         return $this->coreEdit(true);
     }
 
     public function coreEdit($saved = null, $errors = null): View
     {
         $form = $this->form;
-        $form->setValues(settings('core')->all());
-        $form->setAction(route('backend:settings::system.save'));
-       //// todo: errors and validators
+        $form->setValues(settings($this->core, 'core')->all());
+        $form->setAction(route($this->core, 'backend:settings::system.save'));
+        //// todo: errors and validators
 
-        return View::make('backend/system', [
+        return $this->view->make('backend/system', [
             'form' => $form,
             'saved' => $saved,
             'errors' => $errors

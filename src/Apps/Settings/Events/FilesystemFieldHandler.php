@@ -2,7 +2,7 @@
 
 namespace Symbiotic\Apps\Settings\Events;
 
-use Symbiotic\Apps\Settings\Http\Form\FieldFilesystemSelect;
+use Symbiotic\Apps\Settings\Form\FieldFilesystemSelect;
 use Symbiotic\Form\FormBuilder;
 
 class FilesystemFieldHandler

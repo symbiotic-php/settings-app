@@ -2,13 +2,15 @@
   "name": "symbiotic/settings-app",
   "require": {
     "php": ">=8.0",
-    "symbiotic/ui_backend": "1.*"
+    "symbiotic/ui_backend": "^1.4",
+    "symbiotic/form": "^1.4",
+    "symbiotic/micro": "^1.4"
   },
-  "license": "MIT",
-  "version": "1.0.7",
+  "license": ["BSD-3-Clause"],
+  "version": "1.4.0",
   "autoload": {
     "psr-4": {
-      "\\Symbiotic\\Apps\\Settings\\": "src/Apps/Settings"
+      "Symbiotic\\Apps\\Settings\\": "src/Apps/Settings"
     }
   },
   "extra": {
@@ -19,19 +21,15 @@
         "id": "settings",
         "name": "Settings",
         "routing": "\\Symbiotic\\Apps\\Settings\\Routing",
-        "controllers_namespace": "\\Symbiotic\\Apps\\Settings\\Http\\Controllers",
-        "version": "1.0.0"
+        "controllers_namespace": "\\Symbiotic\\Apps\\Settings\\Http\\Controllers"
       },
       "events": {
-        "after": ["package_id", "package_id2"],
         "handlers": {
-          "\\Symbiotic\\Form\\FormBuilder": "Symbiotic\\Apps\\Settings\\Events\\FilesystemFieldHandler",
-          "\\Symbiotic\\Settings\\FieldTypesRepository": "Symbiotic\\Apps\\Settings\\Events\\FieldsHandler",
-          "\\Symbiotic\\UIBackend\\Events\\MainSidebar": "Symbiotic\\Apps\\Settings\\Events\\Menu"
+          "Symbiotic\\Form\\FormBuilder": "Symbiotic\\Apps\\Settings\\Events\\FilesystemFieldHandler",
+          "Symbiotic\\Settings\\FieldTypesRepository": "Symbiotic\\Apps\\Settings\\Events\\FieldsHandler",
+          "Symbiotic\\UIBackend\\Events\\MainSidebar": "Symbiotic\\Apps\\Settings\\Events\\Menu"
         }
-
       }
-
     }
   }
 }

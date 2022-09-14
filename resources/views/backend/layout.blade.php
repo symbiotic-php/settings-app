@@ -2,18 +2,18 @@
 
 @section('sidebar')
     <li>
-      <a href="{{adminRoute('settings::system.index')}}" >
+      <a href="{{$this->adminRoute('settings::system.index')}}" >
           <i class="ti-panel"></i>
           Системные настройки
       </a>
     </li>
     <li>
-      <a href="{{adminRoute('settings::filesystems.index')}}" >
+      <a href="{{$this->adminRoute('settings::filesystems.index')}}" >
           <i class="ti-harddrives"></i>
           Файловые системы</a>
     </li>
     <li>
-    <a href="{{adminRoute('settings::packages.index')}}" >
+    <a href="{{$this->adminRoute('settings::packages.index')}}" >
                <i class="ti-package"></i>
                Настройки приложений
    </a>
