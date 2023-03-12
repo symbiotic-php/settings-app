@@ -14,7 +14,9 @@ class Routing extends AppRouting
     {
 
         $router->group(['namespace' => 'Backend'], function (RouterInterface $router) {
-
+            /**
+             * Filesystems
+             */
             $router->addRoute(['get','post'],'/filesystems/add/{driver}', [
                 'uses' => 'Filesystems@add',
                 'as' => 'filesystems.add'
@@ -37,18 +39,48 @@ class Routing extends AppRouting
                 'as' => 'filesystems.index'
             ]);
 
+            /**
+             * Databases
+             */
+            $router->addRoute(['get','post'],'/databases/add/{driver}', [
+                'uses' => 'Databases@add',
+                'as' => 'databases.add'
+            ]);
+            $router->addRoute(['get','post'],'/databases/add', [
+                'uses' => 'Databases@selectType',
+                'as' => 'databases.selectType'
+            ]);
+            $router->get('/databases/{id}/edit', [
+                'uses' => 'Databases@edit',
+                'as' => 'databases.edit'
+            ]);
+            $router->post('/databases{id}/edit', [
+                'uses' => 'Databases@edit',
+                'as' => 'databases.save'
+            ]);
+
+            $router->get('/databases/', [
+                'uses' => 'Databases@index',
+                'as' => 'databases.index'
+            ]);
+
+
+            /**
+             * Packqges
+             */
             $router->get('/package/{package_id}/', [
                 'uses' => 'Packages@edit',
                 'as' => 'package.edit'
+            ]);
+            $router->post('/package/{package_id}/', [
+                'uses' => 'Packages@save',
+                'as' => 'package.save'
             ]);
             $router->get('/packages/', [
                 'uses' => 'Packages@index',
                 'as' => 'packages.index'
             ]);
-            $router->post('/package/{package_id}/save', [
-                'uses' => 'Packages@save',
-                'as' => 'package.save'
-            ]);
+
 
             $router->get('/system/', [
                 'uses' => 'System@coreEdit',

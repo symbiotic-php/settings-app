@@ -3,13 +3,11 @@
 namespace Symbiotic\Apps\Settings\Http\Form;
 
 use Psr\Http\Message\ServerRequestInterface;
-use Symbiotic\Form\FormBuilder;
 use Symbiotic\View\View;
-use Symbiotic\Form\Form;
 use Symbiotic\Settings\PackageSettingsControllerAbstract;
 use Symbiotic\Settings\Settings;
 use Symbiotic\Form\FormInterface;
-use function _S\collect;
+
 use function _S\route;
 
 class FormPackageSettingsController extends PackageSettingsControllerAbstract
@@ -18,6 +16,7 @@ class FormPackageSettingsController extends PackageSettingsControllerAbstract
 
     /**
      * @param ServerRequestInterface $request
+     *
      * @return View
      * @throws \Exception
      */
@@ -25,14 +24,14 @@ class FormPackageSettingsController extends PackageSettingsControllerAbstract
     {
         $data = $request->getParsedBody();
 
-        $form  = $this->getForm();
-        if($form) {
+        $form = $this->getForm();
+        if ($form) {
             $form->setValues($data);
         }
         if (!$form->getValidator($data)->validate()) {
             return $this->edit(false, $this->errors);
         }
-        $settings = collect();
+        $settings = new Settings($this->settingsRepository->get($this->package->getId()) ?? []);
         /**
          * set deep dot items 'filesystems.local.path' = ['filesystems' => ['local' => ['path' => $v]]]
          */
@@ -48,12 +47,13 @@ class FormPackageSettingsController extends PackageSettingsControllerAbstract
     }
 
 
-
     public function edit($saved = null, $errors = null): View
     {
-        $form   = $this->getForm();
-        if($form) {
-            $form ->setAction(route($this->container,'backend:settings::package.save', ['package_id' => $this->package->getId()]));
+        $form = $this->getForm();
+        if ($form) {
+            $form->setAction(
+                route($this->container, 'backend:settings::package.save', ['package_id' => $this->package->getId()])
+            );
             $form->addField('submit', ['default' => 'Send']);
             $form->setValues($this->getPackageSettings()->all());
         }
@@ -61,7 +61,7 @@ class FormPackageSettingsController extends PackageSettingsControllerAbstract
         return $this->view->make('settings::backend/packages/settings_form', [
             'package' => $this->package,
             'form' => $form,
-           /// 'settings' => collect($this->getPackageSettings()->all()),
+            /// 'settings' => collect($this->getPackageSettings()->all()),
             'saved' => $saved,
             'errors' => $errors
         ]);
@@ -71,7 +71,7 @@ class FormPackageSettingsController extends PackageSettingsControllerAbstract
      * @return FormInterface|null
      * @throws \Error
      */
-    protected function getForm(): ? FormInterface
+    protected function getForm(): ?FormInterface
     {
         $package = $this->package;
 
@@ -80,7 +80,9 @@ class FormPackageSettingsController extends PackageSettingsControllerAbstract
             return new $class;// throw not exists
 
         } elseif ($package->has('settings_fields')) {
-            return $this->formBuilder->createFromArray(['fields'=> $package->get('settings_fields')]);;// throw is not array
+            return $this->formBuilder->createFromArray(
+                ['fields' => $package->get('settings_fields')]
+            );// throw is not array
         }
 
         return null;

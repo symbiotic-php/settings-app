@@ -7,7 +7,7 @@
     "symbiotic/micro": "^1.4"
   },
   "license": ["BSD-3-Clause"],
-  "version": "1.4.0",
+  "version": "1.4.1",
   "autoload": {
     "psr-4": {
       "Symbiotic\\Apps\\Settings\\": "src/Apps/Settings"
@@ -25,8 +25,7 @@
       },
       "events": {
         "handlers": {
-          "Symbiotic\\Form\\FormBuilder": "Symbiotic\\Apps\\Settings\\Events\\FilesystemFieldHandler",
-          "Symbiotic\\Settings\\FieldTypesRepository": "Symbiotic\\Apps\\Settings\\Events\\FieldsHandler",
+          "Symbiotic\\Form\\FormBuilder": "Symbiotic\\Apps\\Settings\\Events\\FormBuilderHandler",
           "Symbiotic\\UIBackend\\Events\\MainSidebar": "Symbiotic\\Apps\\Settings\\Events\\Menu"
         }
       }

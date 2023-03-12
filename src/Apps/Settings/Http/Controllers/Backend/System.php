@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Symbiotic\Apps\Settings\Http\Controllers\Backend;
 
 use Psr\Http\Message\ServerRequestInterface;
+use Symbiotic\Apps\Settings\Form\FieldDatabaseSelect;
 use Symbiotic\Apps\Settings\Form\SystemSettingsForm;
 use Symbiotic\Apps\Settings\Form\FieldFilesystemSelect;
 use Symbiotic\Core\Config;
@@ -87,6 +88,11 @@ class System
                     'label' => 'Media filesystem',
                     'type' => FieldFilesystemSelect::TYPE,
                     'name' => 'media_filesystem',
+                ],
+                [
+                    'label' => 'Default database',
+                    'type' => FieldDatabaseSelect::TYPE,
+                    'name' => 'default_database_connection',
                 ],
                 [
                     'type' => 'bool',

@@ -13,7 +13,12 @@
           Файловые системы</a>
     </li>
     <li>
-    <a href="{{$this->adminRoute('settings::packages.index')}}" >
+        <a href="{{$this->adminRoute('settings::databases.index')}}" >
+            <i class="ti-server"></i>
+            Базы данных</a>
+    </li>
+    <li>
+    <a href="{{$this->adminRoute('settings::packages.index')}}">
                <i class="ti-package"></i>
                Настройки приложений
    </a>
