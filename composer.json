@@ -7,7 +7,7 @@
     "symbiotic/micro": "^1.4"
   },
   "license": ["BSD-3-Clause"],
-  "version": "1.4.1",
+  "version": "1.4.1.2",
   "autoload": {
     "psr-4": {
       "Symbiotic\\Apps\\Settings\\": "src/Apps/Settings"

@@ -12,7 +12,7 @@
         @foreach($databases->all() as $id => $v)
             <tr>
                 <td>{{$id}}</td>
-                <td>{{$v['name']}}</td>
+                <td>{{$v['title']}}</td>
                 <td>{{$v['driver']}}</td>
                 <td><a href="{{$this->adminRoute('databases.edit', ['id'=> $id])}}" target="_blank">{{$this->lang('Edit')}}</a> </td>
             </tr>

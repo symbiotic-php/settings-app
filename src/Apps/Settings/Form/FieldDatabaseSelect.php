@@ -20,7 +20,7 @@ class FieldDatabaseSelect extends Select
     {
         if ($connectionsConfig) {
             foreach ($connectionsConfig->getConnections() as $k => $v) {
-                $data['variants'][$k] = $v['name'] ?? \md5(\serialize($v));
+                $data['variants'][$k] = $v['title'] ?? \md5(\serialize($v));
             }
         }
         parent::__construct($data);

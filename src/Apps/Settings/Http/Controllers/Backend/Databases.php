@@ -209,7 +209,7 @@ class Databases
             $drivers[$driver]['fields'],
             [
                 'type' => 'text',
-                'name' => 'name',
+                'name' => 'title',
                 'label' => 'Название',
                 'default' => ''
             ]
