@@ -10,22 +10,21 @@ use Symbiotic\Routing\RouterInterface;
 
 class Routing extends AppRouting
 {
-    public function backendRoutes(RouterInterface $router):void
+    public function backendRoutes(RouterInterface $router): void
     {
-
         $router->group(['namespace' => 'Backend'], function (RouterInterface $router) {
             /**
              * Filesystems
              */
-            $router->addRoute(['get','post'],'/filesystems/add/{driver}', [
+            $router->addRoute(['get', 'post'], '/filesystems/add/{driver}', [
                 'uses' => 'Filesystems@add',
                 'as' => 'filesystems.add'
             ]);
-            $router->addRoute(['get','post'],'/filesystems/add', [
+            $router->addRoute(['get', 'post'], '/filesystems/add', [
                 'uses' => 'Filesystems@selectType',
                 'as' => 'filesystems.selectType'
             ]);
-            $router->get('/filesystems/{id}/edit', [
+            $router->addRoute(['get', 'post'], '/filesystems/{id}/edit', [
                 'uses' => 'Filesystems@edit',
                 'as' => 'filesystems.edit'
             ]);
@@ -42,11 +41,11 @@ class Routing extends AppRouting
             /**
              * Databases
              */
-            $router->addRoute(['get','post'],'/databases/add/{driver}', [
+            $router->addRoute(['get', 'post'], '/databases/add/{driver}', [
                 'uses' => 'Databases@add',
                 'as' => 'databases.add'
             ]);
-            $router->addRoute(['get','post'],'/databases/add', [
+            $router->addRoute(['get', 'post'], '/databases/add', [
                 'uses' => 'Databases@selectType',
                 'as' => 'databases.selectType'
             ]);

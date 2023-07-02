@@ -2,14 +2,13 @@
 
 namespace Symbiotic\Apps\Settings\Http\Controllers\Backend;
 
-use Psr\EventDispatcher\EventDispatcherInterface;
+
 use Psr\Http\Message\ServerRequestInterface;
 use Symbiotic\Apps\Settings\Events\FilesystemAdapterForms;
 use Symbiotic\Core\CoreInterface;
 use Symbiotic\Core\Events\CacheClear;
 use Symbiotic\Form\FormBuilder;
 use Symbiotic\View\View;
-use Symbiotic\Form\Form;
 use Symbiotic\Form\FormInterface;
 use Symbiotic\Settings\SettingsRepositoryInterface;
 
@@ -42,37 +41,46 @@ class Filesystems
     private function getFilesystemForms(CoreInterface $core): FilesystemAdapterForms
     {
         $forms = new FilesystemAdapterForms();
-        $form = $core->get(FormBuilder::class)->createFromArray([
-                                                                     'fields' =>
-                                                                         [
-                                                                             [
-                                                                                 'type' => 'text',
-                                                                                 'name' => 'name',
-                                                                                 'label' => 'Название',
-                                                                                 'default' => $core('public_path', $core->getBasePath()),
-                                                                             ],
-                                                                             [
-                                                                                 'type' => 'text',
-                                                                                 'name' => 'path',
-                                                                                 'label' => 'Директория',
-                                                                                 'default' => $core('public_path', $core->getBasePath())
-                                                                             ],
-                                                                             [
-                                                                                 'type' => 'bool',
-                                                                                 'name' => 'visibility',
-                                                                                 'label' => 'Публичное',
-                                                                                 'default' => 1
-                                                                             ],
-                                                                             [
-                                                                                 'type' => 'submit',
-                                                                                 'name' => '',
-                                                                                 'default' => 'Send',
-                                                                             ]
-                                                                         ]
+        $form = $core->get(FormBuilder::class)->createFromArray(
+            [
+                'fields' =>
+                    [
+                        [
+                            'type' => 'text',
+                            'name' => 'name',
+                            'label' => 'Название',
+                            'default' => $core('public_path', $core->getBasePath()),
+                        ],
+                        [
+                            'type' => 'text',
+                            'name' => 'path',
+                            'label' => 'Директория',
+                            'default' => $core('public_path', $core->getBasePath())
+                        ],
+                        [
+                            'type' => 'text',
+                            'name' => 'url',
+                            'label' => 'Публичный адрес',
+                            'default' => 'https://'.$core('config::default_host').$core('base_uri', ''),
+                        ],
+                        [
+                            'type' => 'bool',
+                            'name' => 'visibility',
+                            'label' => 'Публичное',
+                            'default' => 1
+                        ],
+                        [
+                            'type' => 'submit',
+                            'name' => '',
+                            'default' => 'Send',
+                        ],
+                    ]
 
-                                                                 ]);
+            ]
+        );
 
         $forms->add('local', $form);
+
         return event($core, $forms);
     }
 
